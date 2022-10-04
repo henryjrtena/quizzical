@@ -80,3 +80,16 @@ const shuffle = (array) => {
 
 
 */
+
+const allQuestions = prevQuestion.map(question => {
+    return (
+        <div key={nanoid()} className='question'>
+            <p>{atob(question.question)}</p>
+            <div className='options'>
+                {generateQuiz(question.options, question.id)}
+            </div>
+        </div>
+    )
+})
+
+return <>{allQuestions}</>
