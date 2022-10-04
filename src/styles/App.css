@@ -66,3 +66,17 @@ body{
     border: 2px solid #D6DBF5;
     transition: 200ms;
 }
+
+.options button.true{
+    background-color: #D6DBF5;
+}
+
+.options button.correct{
+    background-color: #94D7A2;
+    border: 2px solid #94D7A2;
+}
+
+.options button.wrong{
+    background-color: #F8BCBC;
+    border: 2px solid #F8BCBC;
+}

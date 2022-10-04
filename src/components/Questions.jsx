@@ -1,72 +1,94 @@
-import React, {useState} from 'react'
+import React, { useState, useEffect } from 'react'
 import {nanoid} from 'nanoid'
-import he from 'he'
+import shuffle from './functions'
 
-const Questions = (props) => {
-    function shuffle(array) {
-        let currentIndex = array.length,  randomIndex;
-        // While there remain elements to shuffle.
-        while (currentIndex != 0) {
-          // Pick a remaining element.
-          randomIndex = Math.floor(Math.random() * currentIndex);
-          currentIndex--;
-          // And swap it with the current element.
-          [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
+const Questions = ({questions}) => {
+
+    /**
+     * 
+     */
+    let mergeQuestion = questions.map(question => {
+
+        let options = [...question.incorrect_answers, question.correct_answer]
+        let obj = []
+        
+        for (let x = 0; x < options.length; x++) {
+            let temp = atob(options[x])
+            if(options[x] === question.correct_answer){
+                obj.push({
+                    "option": {
+                        // [temp]: temp,
+                        name: temp,
+                        correct: true,
+                        isHeld: false
+                    }
+                })
+            }
+            else{
+                obj.push({
+                    "option": {
+                        // [temp]: temp,
+                        name: temp,
+                        correct: false,
+                        isHeld: false
+                    }
+                })
+            }  
         }
-        return array;
-    }
-    
-    let questionsEl = ''
-        if(props.data.response_code === 0){
-            console.log(props.data.response_code)
-            questionsEl = props.data.results.map(question =>{
-                let questionId = nanoid()
-                //let answerId = nanoid()
-                
-                let options = shuffle([...question.incorrect_answers, question.correct_answer])
-                let optionsEl = options.map(option => <button key={nanoid()} className="option" onClick={()=>props.selectOption(questionId, option)}>{option}</button>)
+        return {
+            id: nanoid(),
+            options: shuffle(obj),
+            question: question.question
+        }
+        
+    })
 
-                let createNewObj = []
-                let obj
-                for (let x = 0; x < options.length; x++) {
-                    if(options[x] === question.correct_answer){
-                        obj = {
-                            name: options[x],
-                            correct: true,
-                            isHeld: false,
-                        }
+    useEffect( ()=> {
+        
+    }, [])
+
+    const selectAnswer = (event) => {
+        mergeQuestion.map(element => {
+            if(element.id == event.target.name){
+                for(let i = 0; i < element.options.length; i++){
+                    if(element.options[i].option.name === event.target.value){
+                        element.options[i].option.isHeld = true;
+                        console.log('Tumpak')
                     }
                     else{
-                        obj = {
-                            name: options[x],
-                            correct: false,
-                            isHeld: false,
-                        }
+                        element.options[i].option.isHeld = false;
+                        console.log('Ligwak')
                     }
-                    createNewObj.push(obj)
                 }
-                let questionAnswer = {"question": question.question, "options": createNewObj}
-                //props.selectOption = questionAnswer
-                //props.setReceivedQuestion(questionAnswer)
-                console.log(questionAnswer)
-                return (
-                    <div className="question" key={nanoid()}>
-                        <p>{he.decode(question.question)}</p>
-                        <div className='options'>
-                            {optionsEl}
-                        </div>
-                    </div>
-                )
-            })
-        }
-        else{
-            console.log("No questions received", props.data.response_code)
-            questionsEl = <p>Error getting questions</p>
-        }
+            }
+        })
+    }
+
+    const generateQuiz = (array, parentId) => {
+        const generate = array.map(quest => {
+            let c = 'wrong'
+            if(quest.option.correct === true){
+                c = 'correct'
+            }
+            return <button key={nanoid()} name={parentId} value={quest.option.name} onClick={selectAnswer} className={`${quest.option.isHeld} ${c}`}>{quest.option.name}</button>
+        })
+        return generate
+    }
+
+    const quizzes = mergeQuestion.map(question => {
+        return (
+            <div key={nanoid()} className='question'>
+                <p>{atob(question.question)}</p>
+                <div className='options'>
+                    {generateQuiz(question.options, question.id)}
+                </div>
+            </div>
+        )
+    })
+    
     return (
         <div className='questions'>
-            {props.data.response_code == 0 && questionsEl}
+            {quizzes}
         </div>
     )
 }
