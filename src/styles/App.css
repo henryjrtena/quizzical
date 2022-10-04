@@ -68,7 +68,7 @@ body{
 }
 
 .options button.true{
-    background-color: #D6DBF5;
+    background-color: #D6DBF5 !important;
 }
 
 .options button.correct{

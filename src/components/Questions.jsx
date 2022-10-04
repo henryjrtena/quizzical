@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import {nanoid} from 'nanoid'
 import shuffle from './functions'
+import { Option } from './Options';
+import { Question } from './Question';
 
 const Questions = ({questions}) => {
     const [fullQuestion, setFullQuestion] = useState()
@@ -19,7 +21,7 @@ const Questions = ({questions}) => {
             if(options[x] === question.correct_answer){
                 obj.push({
                     "option": {
-                        // [temp]: temp,
+                        id: nanoid(),
                         name: temp,
                         correct: true,
                         isHeld: false
@@ -29,7 +31,7 @@ const Questions = ({questions}) => {
             else{
                 obj.push({
                     "option": {
-                        // [temp]: temp,
+                        id: nanoid(),
                         name: temp,
                         correct: false,
                         isHeld: false
@@ -48,7 +50,6 @@ const Questions = ({questions}) => {
         setFullQuestion(newQuestions)
 
     }, [])
-    console.log(fullQuestion)
 
     // const selectAnswer = (event) => {
     //     fullQuestion.map(element => {
@@ -70,32 +71,32 @@ const Questions = ({questions}) => {
 
     // }
 
-    const selectAnswer = (parentId, optionValue) => {
-        const dummyQuestions = [...fullQuestion];
-        dummyQuestions.map(question=>{
-           if(question.id === parentId){
-            question.options.map(option=>{
-                if(option.option.name === optionValue && (option.option.isHeld !== true && option.option.name === optionValue)){
-                    option.option.isHeld = true;
-                }else if(option.option.name === optionValue && (option.option.isHeld === true && option.option.name === optionValue)){
-                    option.option.isHeld = false;
-                }
-                else{
-                    option.option.isHeld = false;
-                }
-            })
-           }
-        })
-        return dummyQuestions;
-    }//setFullQuestion(selectAnswer(parentId, optionValue))
+    // const selectAnswer = (parentId, optionValue) => {
+    //     const dummyQuestions = [...fullQuestion];
+    //     dummyQuestions.map(question=>{
+    //        if(question.id === parentId){
+    //         question.options.map(option=>{
+    //             if(option.option.name === optionValue && (option.option.isHeld !== true && option.option.name === optionValue)){
+    //                 option.option.isHeld = true;
+    //             }else if(option.option.name === optionValue && (option.option.isHeld === true && option.option.name === optionValue)){
+    //                 option.option.isHeld = false;
+    //             }
+    //             else{
+    //                 option.option.isHeld = false;
+    //             }
+    //         })
+    //        }
+    //     })
+    //     return dummyQuestions;
+    // }//setFullQuestion(selectAnswer(parentId, optionValue))
 
-    const generateQuiz = (array, parentId) => {
-        const generate = array.map(quest => {
-            const optionValue = quest.option.name;
-            return <button key={nanoid()} onClick={()=>{setFullQuestion(selectAnswer(parentId, optionValue))}} className={`${quest.option.isHeld}`}>{quest.option.name}</button>
-        })
-        return generate
-    }
+    // const generateQuiz = (array, parentId) => {
+    //     const generate = array.map(quest => {
+    //         const optionValue = quest.option.name;
+    //         return <button key={nanoid()} onClick={()=>{setFullQuestion(selectAnswer(parentId, optionValue))}} className={`${quest.option.isHeld}`}>{quest.option.name}</button>
+    //     })
+    //     return generate
+    // }
 
     // let allQuestions
     // if(fullQuestion != undefined){
@@ -110,20 +111,25 @@ const Questions = ({questions}) => {
     //         )
     //     })
     // }
-    const allQuestions = fullQuestion?.map(question=>{
-       return (
-            <div key={nanoid()} className='question'>
-                    <p>{atob(question.question)}</p>
-                    <div className='options'>
-                        {generateQuiz(question.options, question.id)}
-                    </div>
-            </div>
-         )
-    })
+    // const allQuestions = fullQuestion?.map(question=>{
+    //    return (
+    //         <div key={nanoid()} className='question'>
+    //                 <p>{atob(question.question)}</p>
+    //                 <div className='options'>
+    //                     {
+    //                         question.options.map(option=>{
+    //                         return  <Option isHeld={option.option.isHeld} name={option.option.name} correct={option.option.correct} key={option.option.id} />
+    //                     })}
+    //                 </div>
+    //         </div>
+    //      )
+    // })
 
     return (
         <div className='questions'>
-         {allQuestions}
+         {fullQuestion?.map(question=>{
+            return <Question question={question} key={nanoid()}/>
+         })}
         </div>
     )
 }
